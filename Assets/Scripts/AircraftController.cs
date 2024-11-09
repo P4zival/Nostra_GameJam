@@ -38,16 +38,18 @@ public class AircraftController : MonoBehaviour
         {
             currentSpeed = Mathf.Lerp(currentSpeed, 0, Time.deltaTime);
         }
-      
-       
+
+
         // Horizontal turning using "A" and "D" keys
         float horizontalInput = Input.GetAxis("Horizontal"); // A/D or Left/Right arrows
+        horizontalInput = -horizontalInput;
         float smoothTurn = Mathf.SmoothDampAngle(transform.eulerAngles.z, transform.eulerAngles.z + (horizontalInput * turnSpeed), ref smoothTurnVelocity, smoothTurnTime);
+        
         Debug.Log($"FORWARD PRESSED : {transform.forward * currentSpeed}");
         // Apply movement and rotation
         rb.velocity = transform.up * currentSpeed;
-        transform.rotation = Quaternion.Euler(0,0, smoothTurn);
-        
+        transform.rotation = Quaternion.Euler(0, 0, smoothTurn);
+
     }
 
 }

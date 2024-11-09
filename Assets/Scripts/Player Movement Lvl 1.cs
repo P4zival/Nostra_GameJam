@@ -43,10 +43,7 @@ public class PlayerMovementLvl1 : MonoBehaviour
     {
         // Skip movement input while dashing
         if (isDashing) return;
-
-        // Get horizontal input (A/D keys or Left/Right arrows)
         float horizontalInput = Input.GetAxis("Horizontal");
-
         // Move the player horizontally
         rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
     }
