@@ -7,6 +7,8 @@ TagManager:
   - Coin
   - Enemy
   - Collectible
+  - Bullet
+  - Enemy Bullet
   layers:
   - Default
   - TransparentFX
@@ -18,10 +20,10 @@ TagManager:
   - Obstacles
   - Collectables
   - Enemy
-  - 
-  - 
-  - 
-  - 
+  - Bullet
+  - Player
+  - Enemy Bullet
+  - wall
   - 
   - 
   - 
