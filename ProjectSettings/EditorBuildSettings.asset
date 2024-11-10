@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/UI/Main menu.unity
+    guid: 8ba280b13bfd9c445beaa037aeba4c76
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Flying Test.unity
+    guid: dd3d4c3b92142c3408a97fecd295dca1
+  - enabled: 1
+    path: Assets/Scenes/Nostra2__D.unity
+    guid: 763212db06c151a49b1b69c4334ada1d
   m_configObjects: {}
