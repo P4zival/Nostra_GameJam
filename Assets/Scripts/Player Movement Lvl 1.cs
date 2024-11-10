@@ -9,7 +9,9 @@ public class PlayerMovementLvl1 : MonoBehaviour
     public float jumpForce = 15f;        // Force applied when jumping
     public LayerMask groundLayer;        // Layer to check if the player is grounded
     public Transform groundCheck;        // Position to check if grounded
+    
     public float groundCheckRadius = 0.2f;
+    
 
     [Header("Dash Settings")]
     public float dashSpeed = 25f;        // Speed during dash
@@ -22,10 +24,18 @@ public class PlayerMovementLvl1 : MonoBehaviour
     private float dashTime;
     private float lastDashTime;
 
+    private SpriteRenderer spriteRenderer; // To flip the sprite
+    public PlayerManager pm; 
+    
     void Start()
     {
         // Get the Rigidbody2D component
         rb = GetComponent<Rigidbody2D>();
+
+        // Get the SpriteRenderer component to flip the sprite
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        pm = GetComponent<PlayerManager>();
     }
 
     void Update()
@@ -46,6 +56,12 @@ public class PlayerMovementLvl1 : MonoBehaviour
 
         // Get horizontal input (A/D keys or Left/Right arrows)
         float horizontalInput = Input.GetAxis("Horizontal");
+
+        // Flip the sprite based on movement direction
+        if (horizontalInput != 0)
+        {
+            spriteRenderer.flipX = -horizontalInput < 0; // Flip if moving left
+        }
 
         // Move the player horizontally
         rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
@@ -86,10 +102,12 @@ public class PlayerMovementLvl1 : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if the player hits an obstacle
-        if (collision.gameObject.CompareTag("Obstacle"))
+        if (collision.collider.CompareTag("Enemy"))
         {
+            this.gameObject.SetActive(false);
             Debug.Log("Game Over!");
-            // Implement game over logic here (e.g., restart level or stop movement)
+            
+            pm.LevelReset();
         }
     }
 }
