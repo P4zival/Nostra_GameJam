@@ -24,13 +24,15 @@ public class PlayerMovementLvl1 : MonoBehaviour
     private float dashTime;
     private float lastDashTime;
 
-    private SpriteRenderer spriteRenderer; // To flip the sprite
+    private SpriteRenderer spriteRenderer; 
+    private Animator anim;
     public PlayerManager pm; 
     
     void Start()
     {
         // Get the Rigidbody2D component
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
 
         // Get the SpriteRenderer component to flip the sprite
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -56,6 +58,7 @@ public class PlayerMovementLvl1 : MonoBehaviour
 
         // Get horizontal input (A/D keys or Left/Right arrows)
         float horizontalInput = Input.GetAxis("Horizontal");
+        
 
         // Flip the sprite based on movement direction
         if (horizontalInput != 0)
@@ -65,6 +68,15 @@ public class PlayerMovementLvl1 : MonoBehaviour
 
         // Move the player horizontally
         rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+        if (horizontalInput != 0)
+        {
+            anim.SetBool("isMoving", true); // Player is moving
+        }
+        else
+        {
+            anim.SetBool("isMoving", false); // Player is idle
+        }
+
     }
 
     private void HandleJump()
