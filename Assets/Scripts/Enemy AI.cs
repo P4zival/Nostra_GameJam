@@ -1,88 +1,77 @@
-/*using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    public Transform player;               // Reference to the player's transform
-    public GameObject EnemyBulletPrefab;        // Bullet prefab to be shot
-    public float MoveSpeed = 5f;           // Speed at which the enemy moves
-    public float ShootInterval = 2f;       // Time interval between shots
-    public float AttackRange = 10f;        // Distance at which the enemy starts shooting
-    public float RotationSpeed = 2f;       // Speed of rotation towards the player
+    public Transform player;                   // Reference to the player (set in the inspector)
+    public float moveSpeed = 10f;              // Movement speed of the enemy
+    public float rotationSpeed = 2f;           // Rotation speed for the AI to follow the player
+    public float attackRange = 50f;            // The range at which the enemy can shoot
+    public float fireRate = 1f;                // Time between shots
+    public GameObject bulletPrefab;            // Bullet prefab to be instantiated
+    public Transform gunBarrel;                // The point from where bullets will be shot
 
-    private float timeSinceLastShot = 0f;
+    private float lastFireTime;                // Keeps track of the last time the enemy fired
 
-    // Event for when an enemy is destroyed
-    public event Action<GameObject> onEnemyDestroyed;
-
-    void Start()
+    private void Start()
     {
-        if (player == null)
+        lastFireTime = -fireRate;  // Ensures the enemy can shoot immediately if needed
+    }
+
+    private void Update()
+    {
+        if (player == null) return;
+
+        // Rotate and move towards the player
+        FollowPlayer();
+
+        // Shoot at the player if within attack range
+        if (Vector3.Distance(transform.position, player.position) <= attackRange)
         {
-            Debug.LogError("Player is not assigned!");
+            TryShoot();
         }
     }
 
-    void Update()
+    private void FollowPlayer()
     {
-        MoveTowardsPlayer();
-        ShootAtPlayer();
-    }
-
-    void MoveTowardsPlayer()
-    {
-        // Calculate direction to the player
-        Vector3 directionToPlayer = player.position - transform.position;
-        directionToPlayer.z = 0f;  // Ensure we are only considering the X and Y axes
-
-        if (directionToPlayer.magnitude > attackRange)
-        {
-            // Move towards the player
-            directionToPlayer.Normalize();
-            transform.position += directionToPlayer * moveSpeed * Time.deltaTime;
-        }
-        else
-        {
-            // Stay in position if within attack range
-            // Optionally, you can add attack behaviors here like hovering or circling
-        }
-
         // Rotate towards the player
-        Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, directionToPlayer);
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+        // Move forward in the direction of the player
+        transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
     }
 
-    void ShootAtPlayer()
+    private void TryShoot()
     {
-        timeSinceLastShot += Time.deltaTime;
-
-        if (timeSinceLastShot >= shootInterval)
+        // Only shoot if enough time has passed
+        if (Time.time - lastFireTime >= fireRate)
         {
-            // Shoot a bullet if within attack range
-            if (Vector3.Distance(transform.position, player.position) <= attackRange)
-            {
-                ShootBullet();
-                timeSinceLastShot = 0f;
-            }
+            Shoot();
+            lastFireTime = Time.time;
         }
     }
 
-    void ShootBullet()
+    private void Shoot()
     {
-        // Instantiate the bullet and shoot it towards the player
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-        Vector3 direction = (player.position - transform.position).normalized;
-        bullet.GetComponent<Rigidbody>().velocity = direction * 10f; // Bullet speed
+        if (bulletPrefab && gunBarrel)
+        {
+            // Instantiate bullet and set direction
+            GameObject bullet = Instantiate(bulletPrefab, gunBarrel.position, gunBarrel.rotation);
+            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            if (rb)
+            {
+                rb.velocity = gunBarrel.forward * 20f; // Set bullet velocity (adjust as needed)
+            }
+            Destroy(bullet, 5f);  // Destroy the bullet after 5 seconds to avoid unnecessary clutter
+        }
     }
 
-    // Call this when the enemy is destroyed
-    public void DestroyEnemy()
+    private void OnDestroy()
     {
-        // Trigger the event when the enemy is destroyed
-        onEnemyDestroyed?.Invoke(gameObject);
-        Destroy(gameObject);
-    }
-
+        // Notify the GameManager that an enemy was destroyed (if there's a GameManager)
+        EnemyManager.Instance.EnemyDestroyed();
+    }
 }
-*/
