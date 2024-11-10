@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    public Transform player;                   // Reference to the player (set in the inspector)
+    public GameObject Enemy;
+    public GameObject player;                   // Reference to the player (set in the inspector)
     public float moveSpeed = 10f;              // Movement speed of the enemy
     public float rotationSpeed = 2f;           // Rotation speed for the AI to follow the player
     public float attackRange = 50f;            // The range at which the enemy can shoot
     public float fireRate = 1f;                // Time between shots
     public GameObject bulletPrefab;            // Bullet prefab to be instantiated
-    public Transform gunBarrel;                // The point from where bullets will be shot
+    public float avoidanceRadius = 2f;          // Radius at which to check for nearby enemies
+    public LayerMask enemyLayer;                // Layer mask to detect only other enemies
+
+
 
     private float lastFireTime;                // Keeps track of the last time the enemy fired
 
@@ -23,11 +27,10 @@ public class EnemyAI : MonoBehaviour
     {
         if (player == null) return;
 
-        // Rotate and move towards the player
+        
         FollowPlayer();
-
-        // Shoot at the player if within attack range
-        if (Vector3.Distance(transform.position, player.position) <= attackRange)
+        AvoidOtherEnemies();
+        if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
         {
             TryShoot();
         }
@@ -36,10 +39,9 @@ public class EnemyAI : MonoBehaviour
     private void FollowPlayer()
     {
         // Rotate towards the player
-        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+        Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
         // Move forward in the direction of the player
         transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
     }
@@ -49,29 +51,30 @@ public class EnemyAI : MonoBehaviour
         // Only shoot if enough time has passed
         if (Time.time - lastFireTime >= fireRate)
         {
-            Shoot();
+            GameObject bullet = Instantiate(bulletPrefab, this.gameObject.transform.position, this.gameObject.transform.rotation);
             lastFireTime = Time.time;
         }
     }
-
-    private void Shoot()
+    private void AvoidOtherEnemies()
     {
-        if (bulletPrefab && gunBarrel)
+        // Check for other enemies in the specified radius
+        Collider[] nearbyEnemies = Physics.OverlapSphere(transform.position, avoidanceRadius, enemyLayer);
+        foreach (var enemy in nearbyEnemies)
         {
-            // Instantiate bullet and set direction
-            GameObject bullet = Instantiate(bulletPrefab, gunBarrel.position, gunBarrel.rotation);
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
-            if (rb)
+            if (enemy != null && enemy.gameObject != this.gameObject)
             {
-                rb.velocity = gunBarrel.forward * 20f; // Set bullet velocity (adjust as needed)
+                // Calculate direction to move away from the other enemy
+                Vector3 directionAwayFromEnemy = transform.position - enemy.transform.position;
+                // Move away from the enemy (optional: adjust the strength of the avoidance force)
+                transform.position += directionAwayFromEnemy.normalized * moveSpeed * Time.deltaTime;
             }
-            Destroy(bullet, 5f);  // Destroy the bullet after 5 seconds to avoid unnecessary clutter
         }
     }
-
-    private void OnDestroy()
+    private void OnDrawGizmos()
     {
-        // Notify the GameManager that an enemy was destroyed (if there's a GameManager)
-        EnemyManager.Instance.EnemyDestroyed();
-    }
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, avoidanceRadius);
+    }
+
+
 }
