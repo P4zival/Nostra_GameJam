@@ -6,10 +6,10 @@ public class EnemyAI : MonoBehaviour
 {
     public GameObject Enemy;
     public GameObject player;                   // Reference to the player (set in the inspector)
-    public float moveSpeed = 10f;              // Movement speed of the enemy
-    public float rotationSpeed = 2f;           // Rotation speed for the AI to follow the player
-    public float attackRange = 50f;            // The range at which the enemy can shoot
-    public float fireRate = 1f;                // Time between shots
+    public float moveSpeed = 20f;              // Movement speed of the enemy
+    public float rotationSpeed = 3f;           // Rotation speed for the AI to follow the player
+    public float attackRange = 85f;            // The range at which the enemy can shoot
+    public float fireRate = 1.5f;                // Time between shots
     public GameObject bulletPrefab;            // Bullet prefab to be instantiated
     public float avoidanceRadius = 2f;          // Radius at which to check for nearby enemies
     public LayerMask enemyLayer;                // Layer mask to detect only other enemies
