@@ -68,7 +68,7 @@ public class PlayerMovementLvl1 : MonoBehaviour
 
         // Move the player horizontally
         rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
-        if (horizontalInput != 0)
+       /* if (horizontalInput != 0)
         {
             anim.SetBool("isMoving", true); // Player is moving
         }
@@ -76,7 +76,7 @@ public class PlayerMovementLvl1 : MonoBehaviour
         {
             anim.SetBool("isMoving", false); // Player is idle
         }
-
+       */
     }
 
     private void HandleJump()

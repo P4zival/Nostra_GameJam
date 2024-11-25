@@ -13,9 +13,8 @@ public class PlayerManager : MonoBehaviour
 
     [Header("References")]
     public GameObject KeyPrefab;
+    public GameObject PortalPrefab;
     public Transform LvlSpawnPos;
-
-    
     private CoinCollector coinCollector;
     // Start is called before the first frame update
     void Start()
@@ -27,7 +26,6 @@ public class PlayerManager : MonoBehaviour
     void Update()
     {
         LivesDetect();
-        
     }
     void LivesDetect()
     {
@@ -38,11 +36,21 @@ public class PlayerManager : MonoBehaviour
             SceneManager.LoadScene(currentScene);
         }
     }
-   
     public void LevelReset()
     {
         this.gameObject.transform.position = LvlSpawnPos.transform.position;
         this.gameObject.SetActive(true);
         CurrentPlayerLives--;
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Portal"))
+        {
+            Debug.Log("Collided");
+            // Load the scene
+            SceneManager.LoadScene("Flying Test");
+        }
+    }
+ 
 }

@@ -9,6 +9,8 @@ TagManager:
   - Collectible
   - Bullet
   - Enemy Bullet
+  - Lvl Key
+  - Portal
   layers:
   - Default
   - TransparentFX
